@@ -55,7 +55,7 @@ public class Main extends Application {
         // TODO T1: crear bolas con un clic y mostrar la posición del ratón
 
         zona.setOnMouseClicked(e -> {
-            if (e.getButton() == MouseButton.PRIMARY) { // botón izquierdo
+            if (e.getButton() == MouseButton.PRIMARY && e.isStillSincePress() == true) { // botón izquierdo
                 crearBola(e.getX(), e.getY());
             }
         });
@@ -69,13 +69,17 @@ public class Main extends Application {
         });
 
         // TODO T4: teclas C y Supr
-        zona.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.DELETE) {
                 borrarTodo();
                 actualizar();
 
-            }
+            } else if (e.getCode() == KeyCode.C) {
+                for (Node n : zona.getChildren()) {
+                    ((Bola) n).colorAleatorio();
+                }
 
+            }
         });
 
         actualizar();
@@ -91,18 +95,25 @@ public class Main extends Application {
 
         // TODO T2: clic en una bola (cambiar color o eliminar)
         bola.setOnMouseClicked(e -> {
-            if (e.getButton() == MouseButton.PRIMARY) {
+            if (e.getButton() == MouseButton.PRIMARY && e.isStillSincePress() == true) {
+
                 bola.colorAleatorio();
                 e.consume();
+
             } else if (e.getButton() == MouseButton.SECONDARY) {
                 zona.getChildren().remove(bola);
                 actualizar();
-
             }
         });
 
         // TODO T3: arrastrar la bola
-        bola.setOnMouseDragged(null);
+        bola.setOnMouseDragged(e -> {
+            if (e.getButton() == MouseButton.PRIMARY) {
+                bola.setCenterX(e.getX());
+                bola.setCenterY(e.getY());
+                e.consume();
+            }
+        });
 
         zona.getChildren().add(bola);
         actualizar();
