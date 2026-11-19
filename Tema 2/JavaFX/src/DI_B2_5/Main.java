@@ -1,4 +1,4 @@
-package app;
+package DI_B2_5;
 
 import javafx.application.Application;
 import javafx.css.PseudoClass;
@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -96,13 +97,47 @@ public class Main extends Application {
             if (nuevo.length() > 30) {
                 txtNombre.setText(viejo);
             }
+            actualizarBoton();
         });
 
         // TODO T2: comprobar el correo mientras se escribe
+        txtCorreo.textProperty().addListener((obs, viejo, nuevo) -> {
+
+            if (nuevo.isBlank()) {
+                mostrarAyuda(lblCorreo, "", null);
+                txtCorreo.pseudoClassStateChanged(ERROR, false);
+
+            } else if (correoValido(nuevo)) {
+                mostrarAyuda(lblCorreo, "Correo válido", "correcto");
+                txtCorreo.pseudoClassStateChanged(ERROR, false);
+                actualizarBoton();
+
+            } else {
+                mostrarAyuda(lblCorreo, "Correo inválido", "incorrecto");
+                txtCorreo.pseudoClassStateChanged(ERROR, true);
+
+            }
+
+        });
 
         // TODO T3: recalcular el total al cambiar la cuota o la piscina
 
+        grupoCuota.selectedToggleProperty().addListener((obs, viejo, nuevo) -> {
+            calcularTotal();
+            actualizarBoton();
+
+        });
+
+        chkPiscina.selectedProperty().addListener((obs, viejo, nuevo) -> {
+            calcularTotal();
+            actualizarBoton();
+        });
+
         // TODO T4: Registrar solo se habilita con los datos completos
+        chkCondiciones.selectedProperty().addListener((obs, viejo, nuevo) -> {
+
+            actualizarBoton();
+        });
 
         calcularTotal();
         actualizarBoton();
@@ -120,6 +155,13 @@ public class Main extends Application {
      */
     private void actualizarBoton() {
         // TODO T4 (continuación, ver enunciado)
+        if (txtNombre.getText().isBlank() || !correoValido(txtCorreo.getText()) || !chkCondiciones.isSelected()) {
+            btnRegistrar.setDisable(true);
+
+        } else {
+            btnRegistrar.setDisable(false);
+        }
+
     }
 
     // =========================================================
@@ -131,6 +173,7 @@ public class Main extends Application {
         RadioButton rb = new RadioButton(texto);
         rb.setToggleGroup(grupoCuota);
         rb.setUserData(precio);
+        rb.setMinWidth(Region.USE_PREF_SIZE);
         return rb;
     }
 
