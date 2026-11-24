@@ -92,7 +92,7 @@ public class Main extends Application {
 
         marco.setTop(cabecera);
         marco.setBottom(barraEstado);
-        //marco.getChildren().addAll(cabecera, barraEstado);
+        // marco.getChildren().addAll(cabecera, barraEstado);
         // TODO A1.2 — FIN
 
         scene = new Scene(marco);
@@ -103,6 +103,10 @@ public class Main extends Application {
         // - etiqueta lblFoco (id "lblFoco"): texto "Foco: <id> (<Tipo>)", generado con
         // describir(nodo)
         // - foco inicial con el método enfocar() de cada pantalla (TODO D1.2 a D1.5)
+
+        scene.focusOwnerProperty().addListener((obs, antiguo, actual) -> {
+            lblFoco.setText(describir(actual));
+        });
 
         // TODO D1.1 — FIN
 
@@ -122,6 +126,10 @@ public class Main extends Application {
         // TODO D3.1 — INICIO: Atajo F1 para la ayuda (apartado D3)
         // Se comprueba: F1, con el foco en cualquier control y en cualquier pantalla,
         // llama a mostrarAyuda().
+      
+         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.F1), this::mostrarAyuda);
+
+        
 
         // TODO D3.1 — FIN
 
@@ -161,7 +169,7 @@ public class Main extends Application {
         stage.setWidth(pantalla.getWidth() * 2 / 3); // provisional
         stage.setHeight(pantalla.getHeight() * 2 / 3);
         stage.centerOnScreen();
-    
+
         // TODO A5.1 — FIN
         stage.show();
         mostrar(new PantallaLogin(this, banco));
@@ -185,6 +193,7 @@ public class Main extends Application {
         // TODO D1.2 — INICIO: Foco inicial al mostrar una pantalla (apartado D1)
         // Se comprueba: tras mostrar una pantalla, el foco queda en el control que
         // indica su método enfocar().
+        Platform.runLater(p::enfocar);
 
         // TODO D1.2 — FIN
         actualizarInspector();
