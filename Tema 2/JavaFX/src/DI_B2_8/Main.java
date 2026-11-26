@@ -126,10 +126,8 @@ public class Main extends Application {
         // TODO D3.1 — INICIO: Atajo F1 para la ayuda (apartado D3)
         // Se comprueba: F1, con el foco en cualquier control y en cualquier pantalla,
         // llama a mostrarAyuda().
-      
-         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.F1), this::mostrarAyuda);
 
-        
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.F1), this::mostrarAyuda);
 
         // TODO D3.1 — FIN
 
@@ -244,6 +242,21 @@ public class Main extends Application {
         // - atributo recibo (Stage): título "Recibo", propietaria ventana, 300 x 260
         // - contenido con id "recibo" y botón con id "btnCerrarRecibo" (ya creados)
         // - nunca hay más de una ventana visible con el título "Recibo"
+
+        Scene escena = new Scene(contenido, 300, 260);
+        escena.getStylesheets().addAll(scene.getStylesheets());
+        recibo = new Stage();
+        recibo.setTitle("Recibo");
+        recibo.initOwner(ventana);
+        recibo.initModality(Modality.NONE);
+        recibo.setScene(escena);
+        recibo.show();
+        btnCerrar.setOnAction(e -> recibo.close());
+        ventana.requestFocus();
+
+
+
+
 
         // TODO E3.1 — FIN
     }

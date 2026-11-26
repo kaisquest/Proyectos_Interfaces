@@ -12,7 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 /** Pantalla 3: ingresar o retirar dinero. */
@@ -151,16 +150,48 @@ public class PantallaOperacion extends Pantalla {
         // LIMITE_CONFIRMACION;
         // recibo con app.mostrarRecibo(...) y vuelta al menú con app.mostrarMenu().
         // Provisional: hace la operación sin avisos ni recibo
-        if (error == null) {
+
+        // Casos de error
+        if (error != null) {
+
+            if (error.equals("Fondos insuficientes.")) {
+
+                app.alerta(Alert.AlertType.ERROR, "¡D'oh!", error);
+                volverAlImporte();
+
+            } else if (error.equals("Cantidad no válida.")) {
+                app.alerta(Alert.AlertType.WARNING, "Advertencia", error);
+                volverAlImporte();
+
+            } else if (error.equals("Este cajero solo dispensa billetes de 10, 20 y 50 €.")) {
+                app.alerta(Alert.AlertType.WARNING, "Advertencia", error);
+                volverAlImporte();
+            }
+
+        } else {
             if (ingreso) {
                 banco.ingresar(cantidad);
+                
 
             } else {
-                
-                banco.retirar(cantidad);
+                if (cantidad >= 300) {
+                    if (confirmarRetirada(cantidad)) {
+                        banco.retirar(cantidad);
 
-                app.alerta(Alert.AlertType.ERROR, error, error);
+                    } else {
+                        banco.retirar(cantidad);
+
+                    }
+                    
+                }
+
+                else {
+                    volverAlImporte();
+                }
+                ;
+
             }
+            app.mostrarRecibo(ingreso ? "Ingreso" : "Retirada", cantidad, banco.getSaldoActual());
             app.mostrarMenu();
         }
         // TODO E2.1 — FIN
@@ -175,7 +206,16 @@ public class PantallaOperacion extends Pantalla {
         // Botones que usan los tests: "Retirar <importe>" (el de aceptar) y "Cambiar
         // importe" (el de cancelar).
         // Devuelve true solo si se elige retirar.
-        return true; // provisional
+
+        Alert confirmar = app.crearAlerta(Alert.AlertType.CONFIRMATION, "Billetes", "Desea retirar");
+        ButtonType bRetirar = new ButtonType("Retirar " + cantidad, ButtonBar.ButtonData.OK_DONE);
+        ButtonType bCcambiar = new ButtonType("Cambiar importe", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        confirmar.getButtonTypes().setAll(bRetirar, bCcambiar);
+
+        Optional<ButtonType> respuesta = confirmar.showAndWait();
+
+        return respuesta.isPresent() && respuesta.get() == bRetirar; // provisional
         // TODO E2.2 — FIN
     }
 
